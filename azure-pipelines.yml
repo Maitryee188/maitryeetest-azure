@@ -1,0 +1,19 @@
+trigger:
+- deploy/production
+- deploy/staging
+- deploy/development
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+extends:
+  template: wpengine-pipeline.template.yml
+  parameters:
+    gitEmail: 'youremail@yourdomain.com'
+    gitUser: 'Your Name'
+    productionGit: 'git@git.wpengine.com:production/yourprodsite.git'
+    productionBranch: 'deploy/production'
+    stagingGit: 'git@git.wpengine.com:production/yourstagingsite.git'
+    stagingBranch: 'deploy/staging'
+    developmentGit: 'git@git.wpengine.com:production/yourdevsite.git'
+    developmentBranch: 'deploy/development'
