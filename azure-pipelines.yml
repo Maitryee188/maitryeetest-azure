@@ -1,5 +1,7 @@
 trigger:
 - deploy/production
+- deploy/staging
+- deploy/development
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -11,3 +13,7 @@ extends:
     gitUser: 'Maitryee Zaveri'
     productionGit: 'git@git.wpengine.com:production/maitryee.git'
     productionBranch: 'deploy/production'
+    stagingGit: 'git@git.wpengine.com:production/multimzstg.git'
+    stagingBranch: 'deploy/staging'
+    developmentGit: 'git@git.wpengine.com:production/maitryeedev.git'
+    developmentBranch: 'deploy/development'
