@@ -1,0 +1,82 @@
+variables:
+- group: ssh-info
+- name: phpVersion
+  value: 7.2
+
+parameters:
+- name: gitEmail
+  type: string
+  default: ''
+- name: gitUser
+  type: string
+  default: ''
+- name: productionGit
+  type: string
+  default: ''
+- name: productionBranch
+  type: string
+  default: 'deploy/production'
+- name: stagingGit
+  type: string
+  default: ''
+- name: stagingBranch
+  type: string
+  default: 'deploy/staging'
+- name: developmentGit
+  type: string
+  default: ''
+- name: developmentBranch
+  type: string
+  default: 'deploy/development'
+
+steps:
+- checkout: self
+  persistCredentials: true
+
+- task: InstallSSHKey@0
+  inputs:
+    knownHostsEntry: '$(knownHostsEntry)'
+    sshPublicKey: '$(sshPublicKey)'
+    sshKeySecureFile: 'id_rsa_azure'
+
+- task: Bash@3
+  condition: and(eq(variables['build.sourceBranch'], 'refs/heads/${{ parameters.productionBranch }}'), ne('${{ parameters.productionGit }}', ''), ne('${{ parameters.productionBranch }}', ''))
+  displayName: "Push to WPEngine Prod"
+  inputs:
+    targetType: 'inline'
+    script: |
+      git config --global user.email "${{ parameters.gitEmail }}"
+      git config --global user.name "${{ parameters.gitUser }}"
+      git checkout ${{ parameters.productionBranch }}
+      find . -name ".gitignore" -exec rm -f {} \;
+      git add .
+      git commit -m "Push to WPEngine"
+      git push -f ${{ parameters.productionGit }} ${{ parameters.productionBranch }}
+    
+- task: Bash@3
+  condition: and(eq(variables['build.sourceBranch'], 'refs/heads/${{ parameters.stagingBranch }}'), ne('${{ parameters.stagingGit }}', ''), ne('${{ parameters.stagingBranch }}', ''))
+  displayName: "Push to WPEngine Staging"
+  inputs:
+    targetType: 'inline'
+    script: |
+      git config --global user.email "${{ parameters.gitEmail }}"
+      git config --global user.name "${{ parameters.gitUser }}"
+      git checkout ${{ parameters.stagingBranch }}
+      find . -name ".gitignore" -exec rm -f {} \;
+      git add .
+      git commit -m "Push to WPEngine"
+      git push -f ${{ parameters.stagingGit }} ${{ parameters.stagingBranch }}
+      
+- task: Bash@3
+  condition: and(eq(variables['build.sourceBranch'], 'refs/heads/${{ parameters.developmentBranch }}'), ne('${{ parameters.developmentGit }}', ''), ne('${{ parameters.developmentBranch }}', ''))
+  displayName: "Push to WPEngine Development"
+  inputs:
+    targetType: 'inline'
+    script: |
+      git config --global user.email "${{ parameters.gitEmail }}"
+      git config --global user.name "${{ parameters.gitUser }}"
+      git checkout ${{ parameters.developmentBranch }}
+      find . -name ".gitignore" -exec rm -f {} \;
+      git add .
+      git commit -m "Push to WPEngine"
+      git push -f ${{ parameters.developmentGit }} ${{ parameters.developmentBranch }}
