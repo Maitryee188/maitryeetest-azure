@@ -17,3 +17,5 @@ extends:
     stagingBranch: 'deploy/staging'
     developmentGit: 'git@git.wpengine.com:production/maitryeedev.git'
     developmentBranch: 'deploy/development'
+    
+    #testing
